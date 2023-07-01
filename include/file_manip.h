@@ -39,7 +39,7 @@ public:
     // methods
     std::string input_user_file_format();
 
-    std::string FileManip::input_user_suffix_format();
+    std::string input_user_suffix_format();
 
     void rename_files();
 
