@@ -13,7 +13,7 @@ const std::string FileManip::get_file_data(const std::string& ff, const FileData
     else if (ff == "ms")  return fd.get_ms();
     else if (ff == "sec") return fd.get_sec();
     else if (ff == "min") return fd.get_min();
-    else if (ff == "h")   return fd.get_hr();
+    else if (ff == "hr")   return fd.get_hr();
     else {
         std::cerr << "Error: Invalid format specifier: " << ff << std::endl;
         exit(1);
@@ -153,8 +153,8 @@ void FileManip::rename_files() {
         }
 
         try {
-            std::cout << "OG:  " << file.first.path().filename() << std::endl;
-            std::cout << "New: " << formatted_file_name << std::endl;
+            std::cout << "OG:  " << file.first.path().filename() << "\n";
+            std::cout << "New: " << formatted_file_name << "\n" << std::endl;
             // fs::rename(file.first.path(), file.first.path().parent_path() / formatted_file_name);
         } catch (const fs::filesystem_error& e) {
             std::cerr << "Error renaming file: " << e.what() << std::endl;
