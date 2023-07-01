@@ -134,7 +134,7 @@ void FileManip::rename_files() {
         return;
     }
     else
-        std::cout << _files.size() << "files found"  << std::endl;
+        std::cout << _files.size() << " files found\n"  << std::endl;
 
     for (auto& file : _files) {
         std::string formatted_file_name = create_formatted_file_name(file.second);
@@ -154,7 +154,7 @@ void FileManip::rename_files() {
 
         try {
             std::cout << "OG:  " << file.first.path().filename() << "\n";
-            std::cout << "New: " << formatted_file_name << "\n" << std::endl;
+            std::cout << "New: \"" << formatted_file_name << "\"\n" << std::endl;
             // fs::rename(file.first.path(), file.first.path().parent_path() / formatted_file_name);
         } catch (const fs::filesystem_error& e) {
             std::cerr << "Error renaming file: " << e.what() << std::endl;
