@@ -27,4 +27,4 @@ Modified Filename:   "Game Name - Jul 1, 2023 (Fri) - 01h.41m.31s"
 
 ```
 
-Don't use it yet.
+Don't use it yet. You can't even interact with it yet.
