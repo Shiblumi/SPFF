@@ -2,7 +2,7 @@ CXX = g++
 CXXFLAGS = -std=c++17 -Wall -Wextra -Wpedantic
 INCLUDE = -I include
 
-TARGET = fpss.exe
+TARGET = SPFF.exe
 SRCS = main.cpp file_data.cpp file_manip.cpp
 OBJS = $(SRCS:.cpp=.o)
 
