@@ -1,12 +1,12 @@
 #include "../include/file_data.h"
 
 
-std::vector<std::string> FileData::split(std::string str) {
+str_vect FileData::split(std::string str) {
 
     // from: https://stackoverflow.com/a/58164098
     std::regex re("[. -]");
     std::sregex_token_iterator first{str.begin(), str.end(), re, -1}, last;
-    std::vector<std::string> tokens{first, last};
+    str_vect tokens{first, last};
 
     tokens.erase(
         std::remove_if(
@@ -22,7 +22,7 @@ std::vector<std::string> FileData::split(std::string str) {
 }
 
 
-void FileData::data_to_obj(std::vector<std::string> tokens) {
+void FileData::data_to_obj(str_vect tokens) {
     size_t size = tokens.size();
     _fd.file_type = tokens[size - 1];
     _fd.time_ms   = tokens[size - 2];
@@ -70,8 +70,8 @@ void FileData::calculate_month_name(std::string month) {
 }
 
 
-void FileData::calculate_game_name(std::vector<std::string> tokens) {
-    std::vector<std::string> game_name;
+void FileData::calculate_game_name(str_vect tokens) {
+    str_vect game_name;
     for (auto &s: tokens) {
         if (s == _fd.year) break;
         game_name.push_back(s);
@@ -85,7 +85,7 @@ void FileData::calculate_game_name(std::vector<std::string> tokens) {
 
 void FileData::store_file_data(std::string str) {
 
-    std::vector<std::string> tokens = split(str);
+    str_vect tokens = split(str);
     tokens.erase(remove_if(tokens.begin(), tokens.end(), [](std::string s) { return s == "DVR"; }), tokens.end());
     data_to_obj(tokens);
 }

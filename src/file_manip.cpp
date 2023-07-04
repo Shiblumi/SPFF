@@ -2,7 +2,7 @@
 
 
 const std::string FileManip::get_file_data(const std::string& ff, const FileData& fd) {
-    if (ff == "gn")       return fd.get_game_name();
+    if      (ff == "gn")  return fd.get_game_name();
     else if (ff == "d")   return fd.get_day();
     else if (ff == "dn")  return fd.get_day_name();
     else if (ff == "dns") return fd.get_day_name_short();
@@ -13,7 +13,7 @@ const std::string FileManip::get_file_data(const std::string& ff, const FileData
     else if (ff == "ms")  return fd.get_ms();
     else if (ff == "sec") return fd.get_sec();
     else if (ff == "min") return fd.get_min();
-    else if (ff == "hr")   return fd.get_hr();
+    else if (ff == "hr")  return fd.get_hr();
     else {
         std::cerr << "Error: Invalid format specifier: " << ff << std::endl;
         exit(1);
@@ -41,7 +41,7 @@ std::string FileManip::input_user_suffix_format() {
 }
 
 
-void FileManip::store_dir_files(const std::string& path) {
+void FileManip::store_files(const std::string& path) {
     
     for (auto & file : fs::directory_iterator(path)) {
         if (fs::is_regular_file(file)) {
@@ -53,7 +53,7 @@ void FileManip::store_dir_files(const std::string& path) {
 }
 
 
-std::string FileManip::create_formatted_file_name(const FileData& file_data) {
+std::string FileManip::create_formatted_filename(const FileData& file_data) {
     std::string formatted_file_name{};
     std::string format_flag{};
     bool format_bit{false};
@@ -85,7 +85,7 @@ std::string FileManip::create_formatted_file_name(const FileData& file_data) {
 }
 
 
-std::string FileManip::create_formatted_suffix(const int file_num) {
+std::string FileManip::create_formatted_suffix(const int& file_num) {
     std::string formatted_suffix{};
     std::string format_flag{};
     bool format_bit{false};
@@ -120,15 +120,36 @@ std::string FileManip::create_formatted_suffix(const int file_num) {
 }
 
 
+bool FileManip::validate_new_filenames(fpd_pairs original_files, str_vect modified_filenames) {
+
+    if (original_files.size() != modified_filenames.size()) {
+        std::cerr << "Program error: Original file count does not \
+        match modified_filenames size\n" << std::endl;
+        return false;
+    }
+
+    for (auto filename : modified_filenames) {
+        if (std::count(modified_filenames.begin(), modified_filenames.end(), filename) > 1) {
+            std::cerr << "Program error: Duplicate filename found \
+            in modified_filenames\n" << std::endl;
+            return false;
+        }
+    }
+    return true;
+}
+
+
 void FileManip::rename_files() {
+    str_vect modified_filenames{};
+
     _files.clear();
 
     if (_dir_path.empty()) {
         std::cerr << "Path is empty" << std::endl;
         return;
     }
-    store_dir_files(_dir_path);
-    
+    store_files(_dir_path);
+
     if (_files.empty()) {
         std::cerr << "No files found" << std::endl;
         return;
@@ -137,7 +158,7 @@ void FileManip::rename_files() {
         std::cout << _files.size() << " files found\n"  << std::endl;
 
     for (auto& file : _files) {
-        std::string formatted_file_name = create_formatted_file_name(file.second);
+        std::string formatted_file_name = create_formatted_filename(file.second);
         std::string file_extension = "." + file.second.get_file_type();
         int suffix_num{1};
 
@@ -151,15 +172,17 @@ void FileManip::rename_files() {
             }
             formatted_file_name.append(formatted_suffix);
         }
-
-        try {
-            std::cout << "OG:  " << file.first.path().filename() << "\n";
-            std::cout << "New: \"" << formatted_file_name << "\"\n" << std::endl;
-            // fs::rename(file.first.path(), file.first.path().parent_path() / formatted_file_name);
-        } catch (const fs::filesystem_error& e) {
-            std::cerr << "Error renaming file: " << e.what() << std::endl;
-        }
+        modified_filenames.push_back(formatted_file_name + file_extension);
     }
+
+    
+    // try {
+    //     std::cout << "OG:  " << file.first.path().filename() << "\n";
+    //     std::cout << "New: \"" << formatted_file_name << file_extension << "\"\n" << std::endl;
+    //     // fs::rename(file.first.path(), file.first.path().parent_path() / formatted_file_name);
+    // } catch (const fs::filesystem_error& e) {
+    //     std::cerr << "Error renaming file: " << e.what() << std::endl;
+    // }
 }
 
         // std::cout << "OG:  " << file.first.path().filename() << std::endl;

@@ -17,15 +17,15 @@ class FileData {
     std::string _modified_str;
 
     // private helper funcs
-    std::vector<std::string> split(std::string str);
+    str_vect split(std::string str);
 
-    void data_to_obj(std::vector<std::string> tokens);
+    void data_to_obj(str_vect tokens);
 
     void calculate_day_name(std::string day, std::string month, std::string year);
 
     void calculate_month_name(std::string month);
     
-    void calculate_game_name(std::vector<std::string> tokens);
+    void calculate_game_name(str_vect tokens);
 
 public:
     // ctor dtor

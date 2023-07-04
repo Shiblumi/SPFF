@@ -7,6 +7,8 @@
 #include <memory>
 #include <unordered_map>
 
+typedef std::vector<std::string> str_vect;
+
 struct file_data_struct {
     // general
     std::string game_name;

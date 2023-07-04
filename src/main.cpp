@@ -14,6 +14,9 @@ int main() {
      * eh: Add option to not override files with custom names (i.e. does not match the expected format based on its file data)
      * Put .exe in a dir, dir in the shadowplay dir, use ../${path} to access previous dir.
      * Comments.
+     * Make a vector that stores the modified file names,
+     * which you can use to check for duplicates, check if size
+     * of it is the same as _files for correctness, etc. 
      * 
      * BUGS:
      * Everything
@@ -38,7 +41,7 @@ int main() {
     std::cout << std::endl;
 
     FileManip fm("G:\\Battlebit Remastered\\test");
-    fm.set_user_string_format("{gn} - {mns} {d}, {y} ({dns}) - {hr}h.{min}m.{sec}s");
+    fm.set_user_filename_format("{gn} - {mns} {d}, {y} ({dns}) - {hr}h.{min}m.{sec}s");
     fm.rename_files();
 
     return 0;

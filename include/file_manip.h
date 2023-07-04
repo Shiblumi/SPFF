@@ -16,13 +16,15 @@ class FileManip {
     fpd_pairs _files; // Don't modify this
 
     // private helper funcs
-    void store_dir_files(const std::string& path);
+    void store_files(const std::string& path);
 
     const std::string get_file_data(const std::string& ff, const FileData& fd);
 
-    std::string create_formatted_file_name(const FileData& file_data);
+    std::string create_formatted_filename(const FileData& file_data);
 
-    std::string create_formatted_suffix(const int file_num);
+    std::string create_formatted_suffix(const int& file_num);
+
+    bool validate_new_filenames(fpd_pairs original_files, str_vect modified_file_names);
 
 public:
 
@@ -32,9 +34,13 @@ public:
     ~FileManip() = default;
 
     // access funcs
-    void set_user_string_format(const std::string& user_format) { _user_file_format = user_format; }
+    void set_user_filename_format(const std::string& user_format) { _user_file_format = user_format; }
 
-    std::string get_user_string_format() const { return _user_file_format; }
+    std::string get_user_filename_format() const { return _user_file_format; }
+
+    void set_user_suffix_format(const std::string& user_format) { _user_suffix_format = user_format; }
+
+    std::string get_user_suffix_format() const { return _user_suffix_format; }
 
     // methods
     std::string input_user_file_format();

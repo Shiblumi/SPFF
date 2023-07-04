@@ -1,3 +1,5 @@
 *.o
 *.exe
 /.vscode
+makefile_windows
+makefile_macOS

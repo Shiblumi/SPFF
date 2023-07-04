@@ -2,7 +2,7 @@ CXX = g++
 CXXFLAGS = -std=c++17 -Wall -Wextra -Wpedantic
 INCLUDE = -I include
 
-TARGET = SPFF.exe
+TARGET = SPFF
 SRCS = main.cpp file_data.cpp file_manip.cpp
 OBJS = $(SRCS:.cpp=.o)
 
@@ -17,4 +17,4 @@ $(TARGET): $(OBJS)
 	$(CXX) $(CXXFLAGS) $(INCLUDE) -c $< -o $@
 
 clean:
-	del $(OBJS) $(TARGET)
+	rm -f $(OBJS) $(TARGET)
