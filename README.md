@@ -15,7 +15,7 @@ SPFF uses a format string provided by the user to replace format specifiers with
 
 `{d}`=day    `{dn}`=day_name  `{dns}`=day_name_short
 
-`{hr}`=hours `{min}`=minutes  `{sec}`=seconds  {ms}=milliseconds
+`{hr}`=hours `{min}`=minutes  `{sec}`=seconds  `{ms}`=milliseconds
   
 ### Example:
 ```
