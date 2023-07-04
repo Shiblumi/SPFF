@@ -31,3 +31,7 @@ To-Do:
 - [ ] Test this validation
 
 - [ ] Add option to get file's metadata directly from system (currently only gets it from a ShadowPlay's unmodified filename)
+
+- [ ] Add menu interaction within terminal for the user
+
+- [ ] Add functionality to organize shadowplays into directories by year/month/week/day
