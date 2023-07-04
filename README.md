@@ -27,7 +27,7 @@ Modified Filename:   "Game Name - Jul 1, 2023 (Fri) - 01h.41m.31s"
 ```
 
 To-Do:
-[x] Add validation of modified filenames' correctness
-[ ] Test this validation
+- [x] Add validation of modified filenames' correctness
+- [ ] Test this validation
 
-[ ] Add option to get file's metadata directly from system (currently only gets it from a ShadowPlay's unmodified filename)
+- [ ] Add option to get file's metadata directly from system (currently only gets it from a ShadowPlay's unmodified filename)
