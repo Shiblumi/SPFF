@@ -26,6 +26,8 @@ class FileManip {
 
     bool validate_new_filenames(fpd_pairs original_files, str_vect modified_file_names);
 
+    void apply_rename(fpd_pairs original_files, str_vect modified_filenames);
+
 public:
 
     // ctor dtor

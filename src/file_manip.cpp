@@ -123,20 +123,31 @@ std::string FileManip::create_formatted_suffix(const int& file_num) {
 bool FileManip::validate_new_filenames(fpd_pairs original_files, str_vect modified_filenames) {
 
     if (original_files.size() != modified_filenames.size()) {
-        std::cerr << "Program error: Original file count does not \
+        std::cerr << "Program Error: Original file count does not \
         match modified_filenames size\n" << std::endl;
         return false;
     }
 
     for (auto filename : modified_filenames) {
         if (std::count(modified_filenames.begin(), modified_filenames.end(), filename) > 1) {
-            std::cerr << "Program error: Duplicate filename found \
+            std::cerr << "Program Error: Duplicate filename found \
             in modified_filenames\n" << std::endl;
             return false;
         }
     }
     return true;
 }
+
+
+void apply_rename(fpd_pairs original_files, str_vect modified_filenames) {
+    int size = modified_filenames.size();
+
+    for (int i = 0; i < size; ++i) {
+        fs::path modified_path(modified_filenames[i]);
+        fs::rename(original_files[i].first.path(), modified_path);
+    }
+}
+
 
 
 void FileManip::rename_files() {
@@ -174,6 +185,15 @@ void FileManip::rename_files() {
         }
         modified_filenames.push_back(formatted_file_name + file_extension);
     }
+
+    if (!validate_new_filenames(_files, modified_filenames)) {
+        std::cerr << "Program Error: Modified filenames failed validation\n" << std::endl;
+        exit(1);
+    }
+
+
+
+
 
     
     // try {
