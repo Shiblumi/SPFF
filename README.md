@@ -26,5 +26,3 @@ Format String:       "{gn} - {mns} {d}, {y} ({dns}) - {hr}h.{min}m.{sec}s"
 Modified Filename:   "Game Name - Jul 1, 2023 (Fri) - 01h.41m.31s"
 
 ```
-
-Don't use it yet. You can't even interact with it yet.
