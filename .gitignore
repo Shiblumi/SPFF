@@ -3,3 +3,4 @@
 /.vscode
 makefile_windows
 makefile_macOS
+makefile

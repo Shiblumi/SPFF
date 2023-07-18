@@ -41,7 +41,8 @@ int main() {
     std::cout << std::endl;
 
     FileManip fm("G:\\Battlebit Remastered\\test");
-    fm.set_user_filename_format("{gn} - {mns} {d}, {y} ({dns}) - {hr}h.{min}m.{sec}s");
+    fm.set_user_filename_format("{gn} - {mns} {d}, {y} ({dns}) - {hr}h.{min}m.{sec}s"); 
+    // fm.set_user_filename_format("{gn} - {mns} {d}, {y} ({dns})"); 
     fm.rename_files();
 
     return 0;
