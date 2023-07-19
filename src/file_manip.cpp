@@ -1,5 +1,7 @@
 #include "../include/file_manip.h"
 
+#include <cassert>
+
 
 const std::string FileManip::get_file_data(const std::string& ff, const FileData& fd) {
     if      (ff == "gn")  return fd.get_game_name();
@@ -137,12 +139,12 @@ bool FileManip::validate_new_filenames(fpd_pairs original_files, str_vect modifi
 }
 
 
-void apply_rename(fpd_pairs original_files, str_vect modified_filenames) {
-    int size = modified_filenames.size();
+void FileManip::apply_rename(str_vect modified_filenames) {
+    size_t size = modified_filenames.size();
 
-    for (int i = 0; i < size; ++i) {
+    for (size_t i = 0; i < size; ++i) {
         fs::path modified_path(modified_filenames[i]);
-        fs::rename(original_files[i].first.path(), modified_path);
+        fs::rename(_files[i].first.path(), _files[i].first.path().parent_path() / modified_path);
     }
 }
 
@@ -155,24 +157,32 @@ void FileManip::handle_duplicates(str_vect& modified_filenames) {
             auto it = std::find(modified_filenames.begin(), modified_filenames.end(), filename);
 
             while (it != modified_filenames.end()) {
-                std::cout << "it:       " << (*it) << std::endl; // DEBUG
-                std::cout << "filename: " << filename << std::endl; // DEBUG
                 if (*it == original_filename) {
                     std::string formatted_suffix = create_formatted_suffix(count);
                     (*it).append(formatted_suffix);
                     ++count;
-                    std::cout << "new:      " << (*it) << std::endl; // DEBUG
                 }
                 ++it;
             }
-            std::cout << std::endl; // DEBUG
         }
     }
-    std::cout << "Display:\n";
-    for (auto i : modified_filenames) {
-        std::cout << i << std::endl;
+    // std::cout << "Display:\n";
+    // for (auto i : modified_filenames) {
+    //     std::cout << i << std::endl;
+    // }
+}
+
+
+void FileManip::append_file_extension(str_vect& modified_filenames) {
+    size_t size = modified_filenames.size();
+    assert(size == _files.size());
+    
+    for (size_t i = 0; i < size; ++i) {
+        std::string file_extension = "." + _files[i].second.get_file_type();
+        modified_filenames[i].append(file_extension);
     }
 }
+
 
 
 void FileManip::rename_files() {
@@ -196,32 +206,26 @@ void FileManip::rename_files() {
     for (auto& file : _files) {
         std::string formatted_file_name = create_formatted_filename(file.second);
         std::string file_extension = "." + file.second.get_file_type();
-        // int suffix_num{1};
 
         modified_filenames.push_back(formatted_file_name);
-        // // If file with formatted_file_name already exists in dir, append a suffix
-        // if (fs::exists(file.first.path().parent_path() / formatted_file_name / file_extension)) {
-        //     std::string formatted_suffix = create_formatted_suffix(suffix_num);
-
-        //     while (fs::exists(file.first.path().parent_path() / formatted_file_name / formatted_suffix)) {
-        //         suffix_num++;
-        //         formatted_suffix = create_formatted_suffix(suffix_num);
-        //     }
-        //     formatted_file_name.append(formatted_suffix);
-        // }
     }
 
     handle_duplicates(modified_filenames);
+    append_file_extension(modified_filenames);
 
-    std::cout << "\n\nAfter handle_dup:\n";
     for (auto& i : modified_filenames) {
         std::cout << i << std::endl;
     }
 
-
     if (!validate_new_filenames(_files, modified_filenames)) {
         std::cerr << "Program Error: Modified filenames failed validation\n" << std::endl;
         exit(1);
+    }
+
+    try {
+        apply_rename(modified_filenames);
+    } catch (const fs::filesystem_error& e) {
+        std::cerr << "Error renaming file: " << e.what() << std::endl;
     }
 
 

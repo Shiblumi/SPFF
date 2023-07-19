@@ -26,9 +26,11 @@ class FileManip {
 
     bool validate_new_filenames(fpd_pairs original_files, str_vect modified_file_names);
 
-    void apply_rename(fpd_pairs original_files, str_vect modified_filenames);
+    void apply_rename(str_vect modified_filenames);
 
     void handle_duplicates(str_vect& modified_filenames);
+
+    void append_file_extension(str_vect& modified_filenames);
 
 public:
 
