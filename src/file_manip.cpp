@@ -123,15 +123,13 @@ std::string FileManip::create_formatted_suffix(const int& file_num) {
 bool FileManip::validate_new_filenames(fpd_pairs original_files, str_vect modified_filenames) {
 
     if (original_files.size() != modified_filenames.size()) {
-        std::cerr << "Program Error: Original file count does not \
-        match modified_filenames size\n" << std::endl;
+        std::cerr << "Program Error: Original file count does not match modified_filenames size\n" << std::endl;
         return false;
     }
 
     for (auto filename : modified_filenames) {
         if (std::count(modified_filenames.begin(), modified_filenames.end(), filename) > 1) {
-            std::cerr << "Program Error: Duplicate filename found \
-            in modified_filenames\n" << std::endl;
+            std::cerr << "Program Error: Duplicate filename found in modified_filenames\n" << std::endl;
             return false;
         }
     }
@@ -148,6 +146,33 @@ void apply_rename(fpd_pairs original_files, str_vect modified_filenames) {
     }
 }
 
+
+void FileManip::handle_duplicates(str_vect& modified_filenames) {
+    for (auto& filename : modified_filenames) {
+        std::string original_filename = filename;
+        if (std::count(modified_filenames.begin(), modified_filenames.end(), filename) > 1) {
+            int count{1};
+            auto it = std::find(modified_filenames.begin(), modified_filenames.end(), filename);
+
+            while (it != modified_filenames.end()) {
+                std::cout << "it:       " << (*it) << std::endl; // DEBUG
+                std::cout << "filename: " << filename << std::endl; // DEBUG
+                if (*it == original_filename) {
+                    std::string formatted_suffix = create_formatted_suffix(count);
+                    (*it).append(formatted_suffix);
+                    ++count;
+                    std::cout << "new:      " << (*it) << std::endl; // DEBUG
+                }
+                ++it;
+            }
+            std::cout << std::endl; // DEBUG
+        }
+    }
+    std::cout << "Display:\n";
+    for (auto i : modified_filenames) {
+        std::cout << i << std::endl;
+    }
+}
 
 
 void FileManip::rename_files() {
@@ -171,20 +196,28 @@ void FileManip::rename_files() {
     for (auto& file : _files) {
         std::string formatted_file_name = create_formatted_filename(file.second);
         std::string file_extension = "." + file.second.get_file_type();
-        int suffix_num{1};
+        // int suffix_num{1};
 
-        // If file with formatted_file_name already exists in dir, append a suffix
-        if (fs::exists(file.first.path().parent_path() / formatted_file_name / file_extension)) {
-            std::string formatted_suffix = create_formatted_suffix(suffix_num);
+        modified_filenames.push_back(formatted_file_name);
+        // // If file with formatted_file_name already exists in dir, append a suffix
+        // if (fs::exists(file.first.path().parent_path() / formatted_file_name / file_extension)) {
+        //     std::string formatted_suffix = create_formatted_suffix(suffix_num);
 
-            while (fs::exists(file.first.path().parent_path() / formatted_file_name / formatted_suffix)) {
-                suffix_num++;
-                formatted_suffix = create_formatted_suffix(suffix_num);
-            }
-            formatted_file_name.append(formatted_suffix);
-        }
-        modified_filenames.push_back(formatted_file_name + file_extension);
+        //     while (fs::exists(file.first.path().parent_path() / formatted_file_name / formatted_suffix)) {
+        //         suffix_num++;
+        //         formatted_suffix = create_formatted_suffix(suffix_num);
+        //     }
+        //     formatted_file_name.append(formatted_suffix);
+        // }
     }
+
+    handle_duplicates(modified_filenames);
+
+    std::cout << "\n\nAfter handle_dup:\n";
+    for (auto& i : modified_filenames) {
+        std::cout << i << std::endl;
+    }
+
 
     if (!validate_new_filenames(_files, modified_filenames)) {
         std::cerr << "Program Error: Modified filenames failed validation\n" << std::endl;
