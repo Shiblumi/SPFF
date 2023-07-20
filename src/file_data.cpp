@@ -24,7 +24,7 @@ str_vect FileData::split_filename(std::string str) {
 str_vect FileData::split_last_write_time(std::string str) {
 
     // from: https://stackoverflow.com/a/58164098
-    std::regex re("[ :]");
+    std::regex re(" ");
     std::sregex_token_iterator first{str.begin(), str.end(), re, -1}, last;
     str_vect tokens{first, last};
 
@@ -61,28 +61,28 @@ void FileData::data_from_filename_to_obj(str_vect tokens) {
         std::swap(tokens[size - 7], tokens[size - 6]);
     }
 
-    store_day_name(_fd.day, _fd.month, _fd.year);
-    store_month_name(std::stoi(_fd.month));
+    store_day_data(_fd.day, _fd.month, _fd.year);
+    store_month_data_from_filename(std::stoi(_fd.month));
     store_game_name(tokens);
 }
 
 
 void FileData::data_from_system_to_obj(str_vect tokens) {
-    size_t size = tokens.size();
-    _fd.year       = tokens[size - 1];
-    _fd.month      = tokens[size - 2];
-    _fd.day        = tokens[size - 3];
-    _fd.time_hr    = tokens[size - 4];
-    _fd.time_min   = tokens[size - 5];
-    _fd.time_sec   = tokens[size - 6];
+    _fd.day_name_s   = tokens[0];
+    _fd.month_name_s = tokens[1];
+    _fd.day          = tokens[2];
+    _fd.time_hr      = tokens[3];
+    _fd.time_min     = tokens[4];
+    _fd.time_sec     = tokens[5];
+    _fd.year         = tokens[6];
 
-    store_month_name(std::stoi(_fd.month));
-    store_day_name(_fd.day, _fd.month, _fd.year);
+    store_month_data_from_system(_fd.month_name_s);
+    store_day_data(_fd.day, _fd.month, _fd.year);
     store_file_extension(_original_path);
 }
 
 
-void FileData::store_day_name(std::string a_day, std::string a_month, std::string a_year) {
+void FileData::store_day_data(std::string a_day, std::string a_month, std::string a_year) {
     int day   = std::stoi(a_day);
     int month = std::stoi(a_month);
     int year  = std::stoi(a_year);
@@ -99,15 +99,16 @@ void FileData::store_day_name(std::string a_day, std::string a_month, std::strin
 }
 
 
-void FileData::store_month_name(int month) {
+void FileData::store_month_data_from_filename(int month) {
     _fd.month_name = month_names[static_cast<size_t>(month - 1)];
     _fd.month_name_s = month_names_s[static_cast<size_t>(month - 1)];
 }
 
 
-void FileData::store_month_number(std::string month) {
-    std::string index = std::to_string(std::distance(month_names.begin(), std::find(month_names.begin(), month_names.end(), month)));
+void FileData::store_month_data_from_system(std::string a_month_name_s) {
+    std::string index = std::to_string(std::distance(month_names_s.begin(), std::find(month_names_s.begin(), month_names_s.end(), a_month_name_s)));
     _fd.month = std::stoi(index) + 1;
+    _fd.month_name = month_names[static_cast<size_t>(std::stoi(index))];
 }
 
 
@@ -140,23 +141,19 @@ void FileData::store_file_data_from_filename(std::string str) {
 }
 
 
-void FileData::store_file_data_from_system(std::string a_path) {
+void FileData::store_file_data_from_system(fs::path path) {
 
-    // use a_path and std functions to get the last write time of the file from the system and store it in a human readable string
-    fs::path p(a_path);
-    auto time_since_epoch = fs::last_write_time(p).time_since_epoch();
-    std::chrono::system_clock::time_point tp_since_epoch(time_since_epoch);
-    std::time_t last_write_time = std::chrono::system_clock::to_time_t(tp_since_epoch);
+    // From cppreference.com - https://en.cppreference.com/w/cpp/filesystem/directory_entry/last_write_time
+    // NOTE: Requires std=c++20
+    fs::file_time_type ftime = fs::last_write_time(path);
+    std::time_t cftime = std::chrono::system_clock::to_time_t(std::chrono::file_clock::to_sys(ftime));
+    std::string ftime_str = std::asctime(std::localtime(&cftime));
+    ftime_str.pop_back();  // rm the trailing '\n' put by `asctime`
 
-    std::ostringstream oss;
-    std::string str;
-    oss << std::put_time(std::localtime(&last_write_time), "%Y %m %d %H %M %S");
-    
+    std::cout << ftime_str << std::endl;
 
+    str_vect tokens = split_last_write_time(ftime_str);
 
-
-    std::string last_write_time_str = std::to_string(last_write_time);
-    str_vect tokens = split_last_write_time(last_write_time_str);
     data_from_system_to_obj(tokens);
 }
 

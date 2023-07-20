@@ -25,11 +25,13 @@ class FileData {
 
     void data_from_system_to_obj(str_vect tokens);
 
-    void store_day_name(std::string day, std::string month, std::string year);
+    void store_day_data(std::string day, std::string month, std::string year);
 
-    void store_month_name(int month);
+    void store_month_data_from_filename(int month);
 
-    void store_month_number(std::string month);
+    void store_month_data_from_system(std::string month_name_s);
+
+    void store_month_number(std::string month_name_s);
 
     void store_file_extension(std::string path);
     
@@ -38,10 +40,15 @@ class FileData {
 public:
     // ctor dtor
     FileData() : _original_path(""), _modified_path("") { }
-    FileData(std::string path) : _original_path(path), _modified_path("") {
-        // store_file_data_from_filename(str);
+
+    FileData(std::string str) : _original_path(str), _modified_path("") {
+        store_file_data_from_filename(str);
+    }
+
+    FileData(fs::path path) : _original_path(path.filename().string()), _modified_path("") {
         store_file_data_from_system(path);
     }
+
     ~FileData() = default;
 
     // access funcs for private data
@@ -83,7 +90,7 @@ public:
     // methods
     void store_file_data_from_filename(std::string str);
 
-    void store_file_data_from_system(std::string a_path);
+    void store_file_data_from_system(fs::path path);
 
     void print_data();
 };
