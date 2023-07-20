@@ -1,7 +1,7 @@
 #include "../include/file_data.h"
 
 
-str_vect FileData::split(std::string str) {
+str_vect FileData::split_filename(std::string str) {
 
     // from: https://stackoverflow.com/a/58164098
     std::regex re("[. -]");
@@ -21,8 +21,28 @@ str_vect FileData::split(std::string str) {
     return tokens;
 }
 
+str_vect FileData::split_last_write_time(std::string str) {
 
-void FileData::data_to_obj(str_vect tokens) {
+    // from: https://stackoverflow.com/a/58164098
+    std::regex re("[ :]");
+    std::sregex_token_iterator first{str.begin(), str.end(), re, -1}, last;
+    str_vect tokens{first, last};
+
+    tokens.erase(
+        std::remove_if(
+            tokens.begin(), 
+            tokens.end(), 
+            [](std::string s) { 
+                return s.empty(); 
+            }
+        ), 
+        tokens.end());
+    
+    return tokens;
+}
+
+
+void FileData::data_from_filename_to_obj(str_vect tokens) {
     size_t size = tokens.size();
     _fd.file_type = tokens[size - 1];
     _fd.time_ms   = tokens[size - 2];
@@ -41,13 +61,28 @@ void FileData::data_to_obj(str_vect tokens) {
         std::swap(tokens[size - 7], tokens[size - 6]);
     }
 
-    calculate_day_name(_fd.day, _fd.month, _fd.year);
-    calculate_month_name(_fd.month);
-    calculate_game_name(tokens);
+    store_day_name(_fd.day, _fd.month, _fd.year);
+    store_month_name(std::stoi(_fd.month));
+    store_game_name(tokens);
 }
 
 
-void FileData::calculate_day_name(std::string a_day, std::string a_month, std::string a_year) {
+void FileData::data_from_system_to_obj(str_vect tokens) {
+    size_t size = tokens.size();
+    _fd.year       = tokens[size - 1];
+    _fd.month      = tokens[size - 2];
+    _fd.day        = tokens[size - 3];
+    _fd.time_hr    = tokens[size - 4];
+    _fd.time_min   = tokens[size - 5];
+    _fd.time_sec   = tokens[size - 6];
+
+    store_month_name(std::stoi(_fd.month));
+    store_day_name(_fd.day, _fd.month, _fd.year);
+    store_file_extension(_original_path);
+}
+
+
+void FileData::store_day_name(std::string a_day, std::string a_month, std::string a_year) {
     int day   = std::stoi(a_day);
     int month = std::stoi(a_month);
     int year  = std::stoi(a_year);
@@ -64,13 +99,27 @@ void FileData::calculate_day_name(std::string a_day, std::string a_month, std::s
 }
 
 
-void FileData::calculate_month_name(std::string month) {
-    _fd.month_name = month_names[static_cast<size_t>(std::stoi(month) - 1)];
-    _fd.month_name_s = month_names_s[static_cast<size_t>(std::stoi(month) - 1)];
+void FileData::store_month_name(int month) {
+    _fd.month_name = month_names[static_cast<size_t>(month - 1)];
+    _fd.month_name_s = month_names_s[static_cast<size_t>(month - 1)];
 }
 
 
-void FileData::calculate_game_name(str_vect tokens) {
+void FileData::store_month_number(std::string month) {
+    std::string index = std::to_string(std::distance(month_names.begin(), std::find(month_names.begin(), month_names.end(), month)));
+    _fd.month = std::stoi(index) + 1;
+}
+
+
+void FileData::store_file_extension(std::string path) {
+    fs::path p(path);
+    std::string ext = p.extension().string();
+    _fd.file_type = ext;
+}
+
+
+
+void FileData::store_game_name(str_vect tokens) {
     str_vect game_name;
     for (auto &s: tokens) {
         if (s == _fd.year) break;
@@ -83,12 +132,34 @@ void FileData::calculate_game_name(str_vect tokens) {
 }
 
 
-void FileData::store_file_data(std::string str) {
+void FileData::store_file_data_from_filename(std::string str) {
 
-    str_vect tokens = split(str);
+    str_vect tokens = split_filename(str);
     tokens.erase(remove_if(tokens.begin(), tokens.end(), [](std::string s) { return s == "DVR"; }), tokens.end());
-    data_to_obj(tokens);
+    data_from_filename_to_obj(tokens);
 }
+
+
+void FileData::store_file_data_from_system(std::string a_path) {
+
+    // use a_path and std functions to get the last write time of the file from the system and store it in a human readable string
+    fs::path p(a_path);
+    auto time_since_epoch = fs::last_write_time(p).time_since_epoch();
+    std::chrono::system_clock::time_point tp_since_epoch(time_since_epoch);
+    std::time_t last_write_time = std::chrono::system_clock::to_time_t(tp_since_epoch);
+
+    std::ostringstream oss;
+    std::string str;
+    oss << std::put_time(std::localtime(&last_write_time), "%Y %m %d %H %M %S");
+    
+
+
+
+    std::string last_write_time_str = std::to_string(last_write_time);
+    str_vect tokens = split_last_write_time(last_write_time_str);
+    data_from_system_to_obj(tokens);
+}
+
 
 
 void FileData::print_data() {
@@ -96,7 +167,7 @@ void FileData::print_data() {
 
     int w = 20;
 
-    cout << setw(w) << left << "original_string: " << right << _original_str << endl;
+    cout << setw(w) << left << "original_string: " << right << _original_path << endl;
     cout << setw(w) << left << "game_name: "       << right << _fd.game_name << endl;
     cout << setw(w) << left << "file_type: "       << right << _fd.file_type << endl;
     cout << setw(w) << left << "day: "             << right << _fd.day << endl;

@@ -13,34 +13,45 @@
 class FileData {
     // private data
     file_data_struct _fd;
-    std::string _original_str;
-    std::string _modified_str;
+    std::string _original_path;
+    std::string _modified_path;
 
     // private helper funcs
-    str_vect split(std::string str);
+    str_vect split_filename(std::string str);
 
-    void data_to_obj(str_vect tokens);
+    str_vect split_last_write_time(std::string str);
 
-    void calculate_day_name(std::string day, std::string month, std::string year);
+    void data_from_filename_to_obj(str_vect tokens);
 
-    void calculate_month_name(std::string month);
+    void data_from_system_to_obj(str_vect tokens);
+
+    void store_day_name(std::string day, std::string month, std::string year);
+
+    void store_month_name(int month);
+
+    void store_month_number(std::string month);
+
+    void store_file_extension(std::string path);
     
-    void calculate_game_name(str_vect tokens);
+    void store_game_name(str_vect tokens);
 
 public:
     // ctor dtor
-    FileData() : _original_str(""), _modified_str("") { }
-    FileData(std::string str) : _original_str(str), _modified_str("") { store_file_data(str); }
+    FileData() : _original_path(""), _modified_path("") { }
+    FileData(std::string path) : _original_path(path), _modified_path("") {
+        // store_file_data_from_filename(str);
+        store_file_data_from_system(path);
+    }
     ~FileData() = default;
 
     // access funcs for private data
-    std::string get_original_str() const { return _original_str; }
+    std::string get_original_str() const { return _original_path; }
 
-    std::string get_modified_str() const { return _modified_str; }
+    std::string get_modified_str() const { return _modified_path; }
 
-    void set_original_str(std::string str) { _original_str = str; }
+    void set_original_str(std::string str) { _original_path = str; }
 
-    void set_modified_str(std::string str) { _modified_str = str; }
+    void set_modified_str(std::string str) { _modified_path = str; }
 
     // access funcs for file_data_struct
     std::string get_game_name() const { return _fd.game_name; }
@@ -70,7 +81,9 @@ public:
     std::string get_hr() const { return _fd.time_hr; }
 
     // methods
-    void store_file_data(std::string str);
+    void store_file_data_from_filename(std::string str);
+
+    void store_file_data_from_system(std::string a_path);
 
     void print_data();
 };
