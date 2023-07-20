@@ -43,12 +43,24 @@ std::string FileManip::input_user_suffix_format() {
 }
 
 
-void FileManip::store_files(const std::string& path) {
+void FileManip::store_files_from_filename(const std::string& path) {
     
     for (auto & file : fs::directory_iterator(path)) {
         if (fs::is_regular_file(file)) {
             
             std::pair<fs::directory_entry, FileData> file_pair(file, FileData(file.path().filename().string()));
+            _files.push_back(file_pair);
+        }
+    }
+}
+
+
+void FileManip::store_files_from_system(fs::path path) {
+    
+    for (auto & file : fs::directory_iterator(path)) {
+        if (fs::is_regular_file(file)) {
+            
+            std::pair<fs::directory_entry, FileData> file_pair(file, FileData(file.path()));
             _files.push_back(file_pair);
         }
     }
@@ -190,11 +202,23 @@ void FileManip::rename_files() {
 
     _files.clear();
 
-    if (_dir_path.empty()) {
+    if (_dir_path_str.empty() && _dir_path_obj.empty()) {
         std::cerr << "Path is empty" << std::endl;
         return;
     }
-    store_files(_dir_path);
+    std::cout << "Path str: " << _dir_path_str << "\n";
+    std::cout << "Path obj: " << _dir_path_obj.string() << "\n";
+    
+    if (_dir_path_obj.empty()) {
+        store_files_from_filename(_dir_path_str);
+    }
+    else if (_dir_path_str.empty()) {
+        store_files_from_system(_dir_path_obj);
+    }
+    else {
+        std::cerr << "Program Error: Paths error\n" << std::endl;
+        exit(1);
+    }
 
     if (_files.empty()) {
         std::cerr << "No files found" << std::endl;

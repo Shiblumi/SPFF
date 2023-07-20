@@ -2,21 +2,21 @@
 
 #include "file_data.h"
 
-#include <filesystem>
-
-namespace fs = std::filesystem;
 typedef std::vector<std::pair<fs::directory_entry, FileData>> fpd_pairs; // File Pointer Data Pairs
 
 class FileManip {
 
     // private data
-    std::string _dir_path;
+    std::string _dir_path_str;
+    fs::path _dir_path_obj;
     std::string _user_file_format;
     std::string _user_suffix_format;
     fpd_pairs _files; // Don't modify this
 
     // private helper funcs
-    void store_files(const std::string& path);
+    void store_files_from_filename(const std::string& path);
+
+    void store_files_from_system(fs::path path);
 
     const std::string get_file_data(const std::string& ff, const FileData& fd);
 
@@ -35,8 +35,26 @@ class FileManip {
 public:
 
     // ctor dtor
-    FileManip() : _dir_path{}, _user_file_format{}, _files() { }
-    FileManip(std::string dir_path) : _dir_path(dir_path), _user_file_format{}, _files() { }
+    FileManip() : _dir_path_str{}, _files() {
+        _user_file_format = "{gn} {y}.{m}.{d} - {hr}.{min}.{sec}.{ms}";
+        _user_suffix_format = " - {n}";
+    }
+
+    FileManip(std::string dir_path) : _dir_path_str(dir_path), _dir_path_obj(), _files() {
+        _user_file_format = "{gn} {y}.{m}.{d} - {hr}.{min}.{sec}.{ms}";
+        _user_suffix_format = " - {n}";
+    }
+
+    FileManip(const char* dir_path) : _dir_path_str(dir_path), _dir_path_obj(), _files() {
+        _user_file_format = "{gn} {y}.{m}.{d} - {hr}.{min}.{sec}.{ms}";
+        _user_suffix_format = " - {n}";
+    }
+
+    FileManip(fs::path dir_path) : _dir_path_str{}, _dir_path_obj(dir_path), _files() {
+        _user_file_format = "{gn} {y}.{m}.{d} - {hr}.{min}.{sec}.{ms}";
+        _user_suffix_format = " - {n}";
+    }
+
     ~FileManip() = default;
 
     // access funcs
