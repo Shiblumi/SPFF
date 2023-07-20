@@ -6,7 +6,10 @@
 #include <array>
 #include <memory>
 #include <unordered_map>
+#include <sstream>
+#include <filesystem>
 
+namespace fs = std::filesystem;
 typedef std::vector<std::string> str_vect;
 
 struct file_data_struct {
