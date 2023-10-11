@@ -1,6 +1,3 @@
-# :warning: **NOT DONE -- WORK IN PROGRESS -- POTENTIAL FOR FILE LOSS IF USED INCORRECTLY** :warning:
-
-
 # ShadowPlay File Format (SPFF)
 ## What is SPFF
 SPFF is a program that lets you reformat ShadowPlay filenames (clips & screenshots) within the directory where a game's Shadowplay files are stored.
@@ -28,9 +25,8 @@ Modified Filename:   "Game Name - Jul 1, 2023 (Fri) - 01h.41m.31s"
 
 To-Do:
 - [x] Add validation of modified filenames' correctness
-- [x] Test this validation
 
-- [ ] Add option to get file's metadata directly from system (currently only gets it from a ShadowPlay's unmodified filename)
+- [ ] Add option to get file's metadata directly from system
 
 - [ ] Add menu interaction within terminal for the user
 
