@@ -196,7 +196,6 @@ void FileManip::append_file_extension(str_vect& modified_filenames) {
 }
 
 
-
 void FileManip::rename_files() {
     str_vect modified_filenames{};
 

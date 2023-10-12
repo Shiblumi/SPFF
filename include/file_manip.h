@@ -72,6 +72,4 @@ public:
     std::string input_user_suffix_format();
 
     void rename_files();
-
-
 };
